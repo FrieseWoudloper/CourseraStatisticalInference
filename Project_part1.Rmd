@@ -1,0 +1,81 @@
+---
+title: "The exponential distribution compared to the Central Limit Theorem"
+author: "Willy Bakker"
+output: html_document
+---
+
+### Overview
+In this project we will investigate the exponential distribution and compare it with the Central Limit Theorem (CLT). In order to do this, we will draw 1000 samples of size 40 from an exponential distribution with rate parameter $\lambda$ = 0.2. 
+We will use R to do these simulations.
+
+```{r}
+set.seed(1234)
+mns = NULL
+for (i in 1 : 1000) mns = c(mns, mean(rexp(40, rate = 0.2)))
+```
+###### Listing 1: R code for the simulations
+
+### The sample mean compared to the theoretical mean of the distribution
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+library(ggplot2)
+dat <- data.frame(mns)
+```
+
+The mean or expected value of an exponentially distributed random variable X with rate parameter $\lambda$ is given by
+
+$E[X] = \mu = \frac{1}{\lambda}$
+
+and the variance by
+
+$Var[X] = \sigma^2 = \frac{1}{\lambda^2}$
+
+In our case, where $\lambda$ = 0.2, $\mu = \frac{1}{\lambda} = \frac{1}{0.2} = 5$. 
+
+The CLT states that the distribution of averages of independent and identically distributed variables (properly normalized) becomes that of a standard normal as the sample size increases
+The useful way to think about the CLT is that $\bar X_n$ is approximately $N(\mu, \frac{\sigma^2}{n})$.  
+
+Figure 1 is a histogram for the thousand sample means and shows that the distribution is approximately centered at the theoretical mean. For our sample distribution $\bar{x}$ = `r round(mean(dat$mns), 2)`.  $\bar{x}$ is almost equal to the theoretical mean of the distribution $\mu$ = 5. Our findings are in accordance with the CLT.
+
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+library(ggplot2)
+set.seed(1234)
+mns = NULL
+for (i in 1 : 1000) mns = c(mns, mean(rexp(40, rate = 0.2)))
+dat <- data.frame(mns)
+
+ggplot(dat, aes(x=mns)) + 
+    geom_histogram(binwidth=.4, color = 'black', fill = 'white') +
+    geom_vline(aes(xintercept=mean(mns)), color="red", linetype="dashed", size=1) +
+    xlab('Sample mean') +
+    ylab('Frequency') 
+```
+
+###### Figure 1: Histogram of 1000 sample means from the exponential distribution ($\lambda$ = 0.2, n = 40)
+
+
+### The sample variance compared to the theoretical variance of the distribution
+
+According to the CLT, the theoretical variance of the sample of the 1000 means is $\frac{\sigma^2}{n} = \frac{\frac{1}{\lambda^2}}{n} = \frac{\frac{1}{0.2^2}}{40}$ = `r round( (1/0.2^2)/40, 2)`
+
+The variance we observe in our sample is $s^2$ = `r round(var(dat$mns), 2)`, which is pretty close to the theoretical variance, as one would expect based upon the CLT.
+
+### Distribution
+
+According to the CLT, the normalized sample means have a standard normal distribution. To investigate this, we plot the histogram of the *normalized* sample means and overlay it with the density function from the standard normal distribution.
+
+We normalize the sample means by substracting $\mu$ = 5 and then dividing by SE = $\sqrt{\frac{\sigma^2}{n}} = \sqrt{\frac{\frac{1}{\lambda^2}}{n}} = \sqrt{\frac{\frac{1}{0.2^2}}{40}}$ = `r round( sqrt((1/0.2^2)/40), 2)` 
+
+As you can see in figure 2, the distribution of the normalized sample means closely resembles that of the normal distribution.
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+dat$mns_normalized <- (dat$mns - 5) / sqrt((1/0.2^2)/40)
+
+ggplot(dat, aes(x = mns_normalized)) + 
+    geom_histogram(binwidth=.4, colour = "black", fill = "white", aes(y = ..density..)) +
+    stat_function(fun = dnorm, size = 2) +
+    xlab('Normalized sample mean') +
+    ylab('Density') 
+```
+
+###### Figure 2: Histogram of normalized sample means compared to the standard normal distribution

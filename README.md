@@ -1,1 +1,1 @@
-# Coursera_Statistical_Inference
+This repository contains the my project for Coursera's Statistical Inference class.
