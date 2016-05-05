@@ -1,1 +1,1 @@
-This repository contains the my project for Coursera's Statistical Inference class.
+This repository contains my project for Johns Hopkins [Statistical Inference](https://www.coursera.org/learn/statistical-inference) course.
